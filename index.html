@@ -718,14 +718,14 @@ footer ul a:hover{color:var(--paper);}
 // 1. En tu Google Sheet: Archivo > Compartir > Publicar en la Web > elige la hoja "catalogo" > formato CSV > Publicar.
 // 2. Pega aquí el enlace que te da Google (termina en "output=csv").
 const CONFIG = {
-  SHEET_CSV_URL: 'https://script.google.com/macros/s/AKfycby1_Wg3DJeV-3Kp_FfpobjbYKBU4YhVzW1XZNNR1H7KwY4oZ-ootLcxZgMijOofO-RQ6A/exec',
+  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-mCJjBN7ejqU36sscqXW0-hPQ_yOyTm6E3z2KWipFhNlBoicJKRZKzutIh2tEEnbhY5JpCxyyjaYe/pub?output=csv',
   // Número de WhatsApp para pedidos. Formato: código de país + número, sin "+" ni espacios (para el enlace wa.me).
   WHATSAPP: '59178896247',
   WHATSAPP_DISPLAY: '+591 78896247',
 
   // 3. Publica también la pestaña "configuracion" (clave/valor) como CSV, igual que el catálogo, y pega el enlace aquí.
   //    Filas esperadas: qr_imagen | <url de tu QR>  ·  whatsapp | 59178896247  ·  whatsapp_display | +591 78896247
-  CONFIG_CSV_URL: '',
+  CONFIG_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-mCJjBN7ejqU36sscqXW0-hPQ_yOyTm6E3z2KWipFhNlBoicJKRZKzutIh2tEEnbhY5JpCxyyjaYe/pub?gid=405548317&single=true&output=csv',
 
   // 4. Pega aquí la "URL de la aplicación web" que te da Apps Script al implementar appsscript-pedidos.gs.
   //    Con esto cada venta y cada pedido personalizado se registra solo en tu Google Sheet.
