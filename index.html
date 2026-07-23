@@ -378,6 +378,19 @@ footer ul a:hover{color:var(--paper);}
 .spec-box h5{font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--mustard); margin-bottom:5px;}
 .spec-box p{font-size:0.86rem; color:var(--paper-dim); line-height:1.5;}
 
+/* ---------- pedido personalizado ---------- */
+.custom-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:28px;
+  padding:52px; display:grid; grid-template-columns:1.3fr 0.7fr; gap:30px; align-items:center;
+}
+.custom-text h2{font-size:clamp(1.7rem,2.6vw,2.3rem); color:var(--paper); margin:14px 0 14px;}
+.custom-text p{color:var(--paper-dim); font-size:0.95rem; max-width:480px; margin-bottom:24px;}
+.custom-visual{display:flex; align-items:center; justify-content:center;}
+.custom-visual svg{width:70%;}
+
+/* ---------- custom order modal ---------- */
+.form-note{font-size:0.78rem; color:var(--paper-dim); margin-top:-8px; margin-bottom:16px;}
+
 @media (max-width:980px){
   .hero-grid{grid-template-columns:1fr;}
   .hero-visual{order:-1;}
@@ -389,6 +402,9 @@ footer ul a:hover{color:var(--paper);}
   .steps{flex-direction:column; align-items:flex-start; gap:26px;}
   .step-connector{display:none;}
   .field-row{grid-template-columns:1fr;}
+  .custom-card{grid-template-columns:1fr; padding:34px 26px; text-align:center;}
+  .custom-text p{margin-left:auto; margin-right:auto;}
+  .custom-visual{display:none;}
 }
 @media (max-width:560px){
   .grid{grid-template-columns:1fr;}
@@ -406,6 +422,7 @@ footer ul a:hover{color:var(--paper);}
     <nav class="navlinks">
       <a href="#catalogo">Catálogo</a>
       <a href="#como-funciona">Cómo funciona</a>
+      <a href="#personalizado">Personalizados</a>
       <a href="#pago">Pago y envío</a>
       <a href="#contacto">Contacto</a>
     </nav>
@@ -541,6 +558,33 @@ footer ul a:hover{color:var(--paper);}
 
 <div class="divider"><div class="wrap"><svg id="chainDivider3" width="100%" height="20"></svg></div></div>
 
+<!-- ================= PEDIDO PERSONALIZADO ================= -->
+<section class="section" id="personalizado">
+  <div class="wrap">
+    <div class="custom-card">
+      <div class="custom-text">
+        <div class="eyebrow"><span class="lead-line"></span>Hecho a tu medida</div>
+        <h2>¿Tienes un personaje en mente?</h2>
+        <p>Si no encuentras tu idea en el catálogo, cuéntanos qué imaginas: un personaje propio, los colores de tu equipo favorito, o una réplica de tu mascota. Tejemos bajo pedido.</p>
+        <button class="btn btn-primary" onclick="openCustomModal()">Solicitar diseño personalizado</button>
+      </div>
+      <div class="custom-visual">
+        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="80" cy="80" r="70" fill="none" stroke="#3a4d3d" stroke-width="2" stroke-dasharray="3 9"/>
+          <circle cx="80" cy="86" r="30" fill="#D1477A"/>
+          <path d="M80 56 L58 20 M80 56 L102 20 M50 70 L18 60 M110 70 L142 60 M55 108 L25 128 M105 108 L135 128"
+                stroke="#E8A93E" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="70" cy="80" r="5" fill="#141B15"/>
+          <circle cx="92" cy="80" r="5" fill="#141B15"/>
+          <path d="M72 96 Q80 102 90 96" stroke="#141B15" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="wrap"><svg id="chainDivider4" width="100%" height="20"></svg></div></div>
+
 <!-- ================= PAGO ================= -->
 <section class="section" id="pago">
   <div class="wrap">
@@ -656,16 +700,40 @@ footer ul a:hover{color:var(--paper);}
   </div>
 </div>
 
+<!-- ================= CUSTOM ORDER MODAL ================= -->
+<div class="modal-overlay" id="customModalOverlay" onclick="if(event.target===this) closeCustomModal();">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Pedido personalizado</h3>
+      <button class="icon-btn" onclick="closeCustomModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="customModalBody"></div>
+  </div>
+</div>
+
 <script>
 /* ============ CONFIG ============ */
 // 1. En tu Google Sheet: Archivo > Compartir > Publicar en la Web > elige la hoja "catalogo" > formato CSV > Publicar.
 // 2. Pega aquí el enlace que te da Google (termina en "output=csv").
 const CONFIG = {
-  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-mCJjBN7ejqU36sscqXW0-hPQ_yOyTm6E3z2KWipFhNlBoicJKRZKzutIh2tEEnbhY5JpCxyyjaYe/pub?output=csv',
+  SHEET_CSV_URL: 'https://script.google.com/macros/s/AKfycby1_Wg3DJeV-3Kp_FfpobjbYKBU4YhVzW1XZNNR1H7KwY4oZ-ootLcxZgMijOofO-RQ6A/exec',
   // Número de WhatsApp para pedidos. Formato: código de país + número, sin "+" ni espacios (para el enlace wa.me).
   WHATSAPP: '59178896247',
   WHATSAPP_DISPLAY: '+591 78896247',
+
+  // 3. Publica también la pestaña "configuracion" (clave/valor) como CSV, igual que el catálogo, y pega el enlace aquí.
+  //    Filas esperadas: qr_imagen | <url de tu QR>  ·  whatsapp | 59178896247  ·  whatsapp_display | +591 78896247
+  CONFIG_CSV_URL: '',
+
+  // 4. Pega aquí la "URL de la aplicación web" que te da Apps Script al implementar appsscript-pedidos.gs.
+  //    Con esto cada venta y cada pedido personalizado se registra solo en tu Google Sheet.
+  ORDERS_API_URL: '',
 };
+
+// Se completa en tiempo real desde la pestaña "configuracion" del Sheet (si CONFIG_CSV_URL está configurado).
+let SITE_CONFIG = { qr_imagen: '' };
 
 // Catálogo de respaldo: se usa si SHEET_CSV_URL está vacío o si falla la carga del sheet.
 const DEFAULT_PRODUCTS = [
@@ -721,6 +789,33 @@ function amigurumiSVG(p){
       <path d="M22 100 Q65 94 108 100"/>
     </g>
   </svg>`;
+}
+
+/* ============ CONFIGURACIÓN DINÁMICA (QR, WhatsApp) ============ */
+function loadSiteConfig(){
+  if(!CONFIG.CONFIG_CSV_URL) return;
+  Papa.parse(CONFIG.CONFIG_CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results){
+      results.data.forEach(row=>{
+        const clave = (row.clave || '').toString().trim();
+        const valor = (row.valor || '').toString().trim();
+        if(!clave) return;
+        if(clave === 'qr_imagen' && valor) SITE_CONFIG.qr_imagen = driveDirectLink(valor);
+        if(clave === 'whatsapp' && valor) CONFIG.WHATSAPP = valor;
+        if(clave === 'whatsapp_display' && valor) CONFIG.WHATSAPP_DISPLAY = valor;
+      });
+      // Si el WhatsApp cambió desde el sheet, refrescamos el footer.
+      const fw = document.getElementById('footerWhatsapp');
+      if(fw){
+        fw.href = `https://wa.me/${CONFIG.WHATSAPP}`;
+        fw.textContent = `WhatsApp: ${CONFIG.WHATSAPP_DISPLAY}`;
+      }
+    },
+    error: function(err){ console.error('No se pudo cargar configuracion:', err); }
+  });
 }
 
 /* ============ CARGA DE CATÁLOGO DESDE GOOGLE SHEETS ============ */
@@ -826,7 +921,7 @@ function drawChain(svgId){
   svg.innerHTML = html;
 }
 function drawAllChains(){
-  ['chainDivider1','chainDivider2','chainDivider3'].forEach(drawChain);
+  ['chainDivider1','chainDivider2','chainDivider3','chainDivider4'].forEach(drawChain);
 }
 
 /* ============ RENDER CATALOG ============ */
@@ -924,6 +1019,68 @@ function renderProductModal(p){
   `;
 }
 
+/* ============ PEDIDO PERSONALIZADO ============ */
+function openCustomModal(){
+  state.customStep = 'form';
+  renderCustomModal();
+  document.getElementById('customModalOverlay').classList.add('show');
+}
+function closeCustomModal(){
+  document.getElementById('customModalOverlay').classList.remove('show');
+}
+function renderCustomModal(){
+  const body = document.getElementById('customModalBody');
+  if(state.customStep==='form'){
+    body.innerHTML = `
+      <div class="field"><label>Nombre completo</label><input type="text" id="cuName" placeholder="Ej. María Quispe"></div>
+      <div class="field"><label>Teléfono / WhatsApp</label><input type="tel" id="cuPhone" placeholder="+591 700 00 000"></div>
+      <div class="field"><label>Describe tu idea</label><textarea id="cuDesc" rows="4" placeholder="Ej. Un perrito igual al de la foto, café con manchas blancas, tamaño mini"></textarea></div>
+      <div class="field"><label>Enlace de referencia (opcional)</label><input type="text" id="cuRef" placeholder="Link a una foto o imagen de referencia"></div>
+      <div class="field"><label>Presupuesto aproximado (opcional)</label><input type="text" id="cuBudget" placeholder="Ej. Bs. 150 - 200"></div>
+      <p class="form-note">Te responderemos por WhatsApp para confirmar detalles, tiempos y precio final.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary full-btn" onclick="submitCustomOrder()">Enviar solicitud</button>
+      </div>
+    `;
+  } else if(state.customStep==='success'){
+    const numero = state.lastCustomId;
+    const waMsg = encodeURIComponent(`¡Hola P'itaña! Envié una solicitud de pedido personalizado (${numero}). Quiero coordinar los detalles.`);
+    body.innerHTML = `
+      <div class="success-view">
+        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="#E8A93E" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>
+        <h3>¡Solicitud enviada!</h3>
+        <p>Recibimos los detalles de tu idea. Te contactaremos por WhatsApp para confirmar diseño, tiempo y precio.</p>
+        <div class="order-id">N.º de solicitud: ${numero}</div>
+        <div class="modal-actions">
+          <a class="btn btn-outline" style="flex:1;justify-content:center;" href="https://wa.me/${CONFIG.WHATSAPP}?text=${waMsg}" target="_blank">Escríbenos por WhatsApp</a>
+          <button class="btn btn-primary" style="flex:1;" onclick="closeCustomModal()">Cerrar</button>
+        </div>
+      </div>
+    `;
+  }
+}
+function submitCustomOrder(){
+  const nombre = document.getElementById('cuName').value.trim();
+  const telefono = document.getElementById('cuPhone').value.trim();
+  const descripcion = document.getElementById('cuDesc').value.trim();
+  const referencia = document.getElementById('cuRef').value.trim();
+  const presupuesto = document.getElementById('cuBudget').value.trim();
+  if(!nombre || !telefono || !descripcion){
+    alert('Por favor completa al menos tu nombre, teléfono y una descripción de tu idea.');
+    return;
+  }
+  state.lastCustomId = 'PIT-P-' + Math.random().toString(36).slice(2,7).toUpperCase();
+  state.customStep = 'success';
+  renderCustomModal();
+
+  if(CONFIG.ORDERS_API_URL){
+    fetch(CONFIG.ORDERS_API_URL, {
+      method:'POST',
+      body: JSON.stringify({ accion:'personalizado', nombre, telefono, descripcion, referencia, presupuesto })
+    }).catch(err => console.error('No se pudo registrar el pedido personalizado:', err));
+  }
+}
+
 /* ============ CART LOGIC ============ */
 function addToCart(id){
   state.cart[id] = (state.cart[id]||0) + 1;
@@ -1002,7 +1159,7 @@ function closeDrawer(){
   document.getElementById('drawer').classList.remove('show');
   document.getElementById('overlay').classList.remove('show');
 }
-function closeAll(){ closeDrawer(); closeCheckout(); closeProductModal(); }
+function closeAll(){ closeDrawer(); closeCheckout(); closeProductModal(); closeCustomModal(); }
 
 /* ============ CHECKOUT ============ */
 function startCheckout(){
@@ -1037,15 +1194,16 @@ function renderCheckout(){
     state.step===1 ? 'Datos de envío' : state.step===2 ? 'Método de pago' : state.step===3 ? 'Confirma tu pedido' : 'Finalizar pedido';
 
   if(state.step===1){
+    const c = state.customer || {};
     body.innerHTML = `
-      <div class="field"><label>Nombre completo</label><input type="text" id="ckName" placeholder="Ej. María Quispe"></div>
+      <div class="field"><label>Nombre completo</label><input type="text" id="ckName" placeholder="Ej. María Quispe" value="${c.nombre||''}"></div>
       <div class="field-row">
-        <div class="field"><label>Teléfono / WhatsApp</label><input type="tel" id="ckPhone" placeholder="+591 700 00 000"></div>
-        <div class="field"><label>Zona</label><input type="text" id="ckZone" placeholder="Ej. Sopocachi"></div>
+        <div class="field"><label>Teléfono / WhatsApp</label><input type="tel" id="ckPhone" placeholder="+591 700 00 000" value="${c.telefono||''}"></div>
+        <div class="field"><label>Zona</label><input type="text" id="ckZone" placeholder="Ej. Sopocachi" value="${c.zona||''}"></div>
       </div>
-      <div class="field"><label>Dirección de entrega</label><textarea id="ckAddress" rows="3" placeholder="Calle, número, referencia"></textarea></div>
+      <div class="field"><label>Dirección de entrega</label><textarea id="ckAddress" rows="3" placeholder="Calle, número, referencia">${c.direccion||''}</textarea></div>
       <div class="modal-actions">
-        <button class="btn btn-primary" onclick="goStep(2)">Continuar a pago</button>
+        <button class="btn btn-primary" onclick="saveCustomerAndContinue()">Continuar a pago</button>
       </div>
     `;
   } else if(state.step===2){
@@ -1106,8 +1264,11 @@ function renderCheckout(){
 
 function payDetailHTML(){
   if(state.payMethod==='qr'){
+    const qrVisual = SITE_CONFIG.qr_imagen
+      ? `<img src="${SITE_CONFIG.qr_imagen}" alt="Código QR de pago" style="width:170px;height:170px;object-fit:contain;border-radius:8px;">`
+      : qrSVG();
     return `<div class="qr-box">
-      ${qrSVG()}
+      ${qrVisual}
       <strong>Bs. ${cartSubtotal()}</strong>
       <span>Escanea este código con tu app bancaria o billetera móvil para pagar tu pedido. Recibirás la confirmación por WhatsApp.</span>
     </div>`;
@@ -1145,18 +1306,54 @@ function qrSVG(){
 }
 
 function selectPay(m){ state.payMethod = m; renderCheckout(); }
+function saveCustomerAndContinue(){
+  const nombre = document.getElementById('ckName').value.trim();
+  const telefono = document.getElementById('ckPhone').value.trim();
+  const zona = document.getElementById('ckZone').value.trim();
+  const direccion = document.getElementById('ckAddress').value.trim();
+  if(!nombre || !telefono || !direccion){
+    alert('Por favor completa al menos tu nombre, teléfono y dirección de entrega.');
+    return;
+  }
+  state.customer = { nombre, telefono, zona, direccion };
+  goStep(2);
+}
 function goStep(n){ state.step = n; renderCheckout(); }
 function generateOrderId(){
-  return 'OV-' + Math.random().toString(36).slice(2,7).toUpperCase();
+  return 'PIT-' + Math.random().toString(36).slice(2,7).toUpperCase();
 }
 function confirmOrder(){
   state.lastOrderId = generateOrderId();
   state.step = 'success';
   renderCheckout();
+  sendOrderToSheet();
+}
+function sendOrderToSheet(){
+  if(!CONFIG.ORDERS_API_URL) return; // no configurado todavía: el pedido solo queda visible en pantalla / WhatsApp
+  const c = state.customer || {};
+  const productos = Object.entries(state.cart).map(([id,qty])=>{
+    const p = PRODUCTS.find(p=>p.id===id);
+    return { nombre: p ? p.nombre : id, cantidad: qty, subtotal: p ? p.precio*qty : 0 };
+  });
+  const payload = {
+    accion: 'pedido',
+    cliente: c.nombre || '',
+    telefono: c.telefono || '',
+    zona: c.zona || '',
+    direccion: c.direccion || '',
+    productos: productos,
+    cantidadTotal: cartCount(),
+    subtotal: cartSubtotal(),
+    metodoPago: state.payMethod==='qr' ? 'QR' : 'Efectivo contra entrega',
+    notas: state.lastOrderId,
+  };
+  fetch(CONFIG.ORDERS_API_URL, { method:'POST', body: JSON.stringify(payload) })
+    .catch(err => console.error('No se pudo registrar la venta en el Sheet:', err));
 }
 function finishOrder(){
   state.cart = {};
   state.payMethod = null;
+  state.customer = null;
   state.step = 1;
   document.getElementById('checkoutStepsBar').style.display = 'flex';
   updateCartUI();
@@ -1171,6 +1368,7 @@ const fw = document.getElementById('footerWhatsapp');
 fw.href = `https://wa.me/${CONFIG.WHATSAPP}`;
 fw.textContent = `WhatsApp: ${CONFIG.WHATSAPP_DISPLAY}`;
 
+loadSiteConfig();
 loadCatalog();
 updateCartUI();
 drawAllChains();
