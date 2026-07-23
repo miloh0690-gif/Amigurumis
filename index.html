@@ -835,9 +835,18 @@ function styleForId(id){
 }
 
 // Convierte un enlace normal de "compartir" de Google Drive a un enlace de imagen directa.
+// Soporta los formatos: /file/d/ID/view, open?id=ID, uc?id=ID, uc?export=view&id=ID
 function driveDirectLink(url){
-  const m = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-  if(m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  if(!url) return url;
+  let id = null;
+  let m = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if(m) id = m[1];
+  if(!id){
+    m = url.match(/[?&]id=([^&]+)/);
+    if(m) id = m[1];
+  }
+  // El formato "thumbnail" es el más confiable para mostrar imágenes públicas de Drive dentro de una web.
+  if(id) return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
   return url;
 }
 
@@ -935,9 +944,14 @@ function setFilter(id){ state.filter = id; renderFilters(); renderProducts(); }
 
 function cardMedia(p){
   if(p.imagenes && p.imagenes.length){
-    return `<img src="${p.imagenes[0]}" alt="${p.nombre}" loading="lazy">`;
+    return `<img src="${p.imagenes[0]}" alt="${p.nombre}" loading="lazy" data-pid="${p.id}" onerror="imgFallback(this)">`;
   }
   return amigurumiSVG(p);
+}
+// Si una imagen del sheet no carga (link roto, sin permisos, formato no soportado), se reemplaza por el ilustración tejida.
+function imgFallback(imgEl){
+  const p = PRODUCTS.find(x=>x.id===imgEl.dataset.pid);
+  if(p) imgEl.outerHTML = amigurumiSVG(p);
 }
 
 function renderProducts(){
@@ -995,7 +1009,7 @@ function setGallery(id, i){
 }
 function renderProductModal(p){
   const imgs = galleryImages(p);
-  const slides = imgs.map(src => `<div class="gallery-slide">${src==='__svg__' ? amigurumiSVG(p) : `<img src="${src}" alt="${p.nombre}">`}</div>`).join('');
+  const slides = imgs.map(src => `<div class="gallery-slide">${src==='__svg__' ? amigurumiSVG(p) : `<img src="${src}" alt="${p.nombre}" data-pid="${p.id}" onerror="this.parentElement.innerHTML=amigurumiSVG(PRODUCTS.find(x=>x.id==='${p.id}'))">`}</div>`).join('');
   document.getElementById('pdetailBody').innerHTML = `
     <div class="pdetail-top">
       <div class="gallery">
@@ -1131,7 +1145,7 @@ function updateCartUI(){
   body.innerHTML = entries.map(([id,qty])=>{
     const p = PRODUCTS.find(p=>p.id===id);
     return `<div class="cart-line">
-      <div class="thumb">${p.imagenes && p.imagenes.length ? `<img src="${p.imagenes[0]}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">` : amigurumiSVG(p)}</div>
+      <div class="thumb">${p.imagenes && p.imagenes.length ? `<img src="${p.imagenes[0]}" alt="${p.nombre}" data-pid="${p.id}" onerror="imgFallback(this)" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">` : amigurumiSVG(p)}</div>
       <div class="info">
         <div class="info-top">
           <h4>${p.nombre}</h4>
@@ -1265,7 +1279,7 @@ function renderCheckout(){
 function payDetailHTML(){
   if(state.payMethod==='qr'){
     const qrVisual = SITE_CONFIG.qr_imagen
-      ? `<img src="${SITE_CONFIG.qr_imagen}" alt="Código QR de pago" style="width:170px;height:170px;object-fit:contain;border-radius:8px;">`
+      ? `<img src="${SITE_CONFIG.qr_imagen}" alt="Código QR de pago" style="width:170px;height:170px;object-fit:contain;border-radius:8px;" onerror="this.outerHTML=qrSVG()">`
       : qrSVG();
     return `<div class="qr-box">
       ${qrVisual}
